@@ -47,6 +47,7 @@ namespace Fps.Config
             var clientMovement = new ClientMovement.Snapshot { Latest = new ClientRequest() };
             var clientRotation = new ClientRotation.Snapshot { Latest = rotationUpdate };
             var shootingComponent = new ShootingComponent.Snapshot();
+            var serverProjectileComponent = new ServerProjectileComponent.Snapshot();
             var gunComponent = new GunComponent.Snapshot { GunId = PlayerGunSettings.DefaultGunIndex };
             var gunStateComponent = new GunStateComponent.Snapshot { IsAiming = false };
             var healthComponent = new HealthComponent.Snapshot
@@ -72,6 +73,7 @@ namespace Fps.Config
             template.AddComponent(clientMovement, client);
             template.AddComponent(clientRotation, client);
             template.AddComponent(shootingComponent, client);
+            template.AddComponent(serverProjectileComponent, WorkerUtils.UnityGameLogic);
             template.AddComponent(gunComponent, WorkerUtils.UnityGameLogic);
             template.AddComponent(gunStateComponent, client);
             template.AddComponent(healthComponent, WorkerUtils.UnityGameLogic);
@@ -100,14 +102,15 @@ namespace Fps.Config
             {
                 Position.ComponentId, Metadata.ComponentId, OwningWorker.ComponentId,
                 ServerMovement.ComponentId, ClientRotation.ComponentId, HealthComponent.ComponentId,
-                GunComponent.ComponentId, GunStateComponent.ComponentId, ShootingComponent.ComponentId
+                GunComponent.ComponentId, GunStateComponent.ComponentId, ShootingComponent.ComponentId,
+                ServerProjectileComponent.ComponentId
             });
 
             // ClientMovement is used by the ServerMovementDriver script.
             // ShootingComponent is used by the ServerShootingSystem.
             var serverSelfInterest = InterestQuery.Query(Constraint.EntityId(entityId)).FilterResults(new[]
             {
-                ClientMovement.ComponentId, ShootingComponent.ComponentId
+                ClientMovement.ComponentId, ShootingComponent.ComponentId, ServerProjectileComponent.ComponentId
             });
 
             // ClientRotation is used for driving player proxies.
@@ -117,7 +120,7 @@ namespace Fps.Config
             {
                 Position.ComponentId, Metadata.ComponentId, OwningWorker.ComponentId,
                 ServerMovement.ComponentId, ClientRotation.ComponentId, HealthComponent.ComponentId,
-                ShootingComponent.ComponentId
+                ShootingComponent.ComponentId, ServerProjectileComponent.ComponentId
             });
 
             var interest = InterestTemplate.Create()

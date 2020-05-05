@@ -1,16 +1,33 @@
 package fps;
 
+import "improbable/gdk/core/common.schema";
 import "fps/common.schema";
 
 type ShotInfo {
   bool hit_something = 1;
-  EntityId entity_id = 2;
+  EntityId target_entity_id = 2;
   fps.Vector3Int hit_location = 3;
   fps.Vector3Int hit_origin = 4;
+  EntityId source_entity_id = 5;
+}
+
+type ProjectileShotInfo {
+  EntityId source_entity_id = 1;
+  fps.Vector3Int target_direction = 2;
+  fps.Vector3Int origin_location = 3;
+  uint32 server_bullet_index = 4;
 }
 
 component ShootingComponent {
   id = 2050;
 
   event ShotInfo shots;
+  event ProjectileShotInfo pro_shots;
+}
+
+component ServerProjectileComponent {
+  id = 2053;
+
+  command improbable.gdk.core.Empty spawn_projectile(ProjectileShotInfo);
+  event ShotInfo hit;
 }

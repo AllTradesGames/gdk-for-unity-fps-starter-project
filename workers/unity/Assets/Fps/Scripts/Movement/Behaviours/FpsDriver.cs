@@ -209,7 +209,14 @@ namespace Fps.Movement
         private void FireShot(GunSettings gunSettings)
         {
             var ray = shotRayProvider.GetShotRay(gunState.Data.IsAiming, camera);
-            shooting.FireShot(gunSettings.ShotRange, ray);
+            if (gunSettings.IsHitscan)
+            {
+                shooting.FireShot(gunSettings.HitscanShotRange, ray);
+            }
+            else
+            {
+                shooting.FireProjectileShot(ray);
+            }
             shooting.InitiateCooldown(gunSettings.ShotCooldown);
         }
 

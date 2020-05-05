@@ -6,13 +6,15 @@ namespace Fps.Guns
     [CreateAssetMenu(menuName = "Improbable/Gun Config/Gun Settings", order = 1)]
     public class GunSettings : ScriptableObject
     {
+        [SerializeField] private bool isHitScan;
+        [SerializeField] private uint serverBulletIndex;
         [SerializeField] private GameObject gunModel;
         [SerializeField] private GameObject impactEffect;
         [SerializeField] private GameObject muzzleFlashEffect;
         [SerializeField] private GameObject bulletLineRenderer;
         [SerializeField] private Color shotColour;
-        [SerializeField] private float shotDamage;
-        [SerializeField] private float shotRange;
+        [SerializeField] private int shotDamage;
+        [SerializeField] private float hitscanShotRange;
         [SerializeField] private float bulletRenderLength;
         [SerializeField] private float shotRenderTime;
 
@@ -47,6 +49,10 @@ namespace Fps.Guns
         private float aimYawSpeed = 1;
 
 
+        public bool IsHitscan => isHitScan;
+
+        public uint ServerBulletIndex => serverBulletIndex;
+
         public GameObject GunModel => gunModel;
 
         public GameObject ImpactEffect => impactEffect;
@@ -57,11 +63,11 @@ namespace Fps.Guns
 
         public Color ShotColour => shotColour;
 
-        public float ShotDamage => shotDamage;
+        public int ShotDamage => shotDamage;
 
         public float BulletRenderLength => bulletRenderLength;
 
-        public float ShotRange => shotRange;
+        public float HitscanShotRange => hitscanShotRange;
 
         public float ShotRenderTime => shotRenderTime;
 

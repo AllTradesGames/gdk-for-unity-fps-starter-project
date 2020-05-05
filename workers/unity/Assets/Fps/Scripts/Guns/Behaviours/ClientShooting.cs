@@ -88,13 +88,27 @@ namespace Fps.Guns
 
             var shotInfo = new ShotInfo()
             {
-                EntityId = entityId,
+                TargetEntityId = entityId,
                 HitSomething = hitSomething,
                 HitLocation = (hitLocation - workerOrigin).ToVector3Int(),
                 HitOrigin = (ray.origin - workerOrigin).ToVector3Int(),
+                SourceEntityId = GetComponent<LinkedEntityComponent>().EntityId,
             };
 
             shooting.SendShotsEvent(shotInfo);
+        }
+
+        public void FireProjectileShot(Ray ray)
+        {
+            var shotInfo = new ProjectileShotInfo()
+            {
+                SourceEntityId = GetComponent<LinkedEntityComponent>().EntityId,
+                TargetDirection = ray.direction.ToVector3Int(),
+                OriginLocation = (ray.origin - workerOrigin).ToVector3Int(),
+                ServerBulletIndex = 0, // Server resets this to correct value
+            };
+
+            shooting.SendProShotsEvent(shotInfo);
         }
     }
 }

@@ -20,8 +20,8 @@ MonoBehaviour:
   bulletLineRenderer: {fileID: 1329646125381318, guid: 2a4d20cdb556d6d4abebc7178d87e70e,
     type: 3}
   shotColour: {r: 1, g: 0.40021437, b: 0, a: 1}
-  shotDamage: 10
-  shotRange: 200
+  ShotDamage: 10
+  HitscanShotRange: 200
   bulletRenderLength: 20
   shotRenderTime: 0.6
   isAutomatic: 1

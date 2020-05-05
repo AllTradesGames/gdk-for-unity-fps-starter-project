@@ -19,6 +19,7 @@ namespace Fps.Guns
         }
 
         [Require] private ShootingComponentReader shooting;
+        [Require] private ServerProjectileComponentReader serverHit;
         [Require] private GunStateComponentReader gunState;
 
         [Tooltip(
@@ -68,6 +69,8 @@ namespace Fps.Guns
         private void OnEnable()
         {
             shooting.OnShotsEvent += ShotFired;
+            shooting.OnProShotsEvent += ProjectileShotFired;
+            serverHit.OnHitEvent += ProjectileHit;
             spatial = GetComponent<LinkedEntityComponent>();
         }
 
@@ -89,6 +92,16 @@ namespace Fps.Guns
 
             PlayRecoil(isAiming);
             VisualGunShot(hitLocation, hitSomething);
+        }
+
+        private void ProjectileShotFired(ProjectileShotInfo shotInfo)
+        {
+            // TODO: Projectile shot rendering logic
+        }
+
+        private void ProjectileHit(ShotInfo shotInfo)
+        {
+            VisualImpact(shotInfo.HitLocation.ToVector3() + spatial.Worker.Origin);
         }
 
         void IRequiresGun.InformOfGun(GunSettings settings)
@@ -232,7 +245,7 @@ namespace Fps.Guns
 
         private IEnumerator Shot(PoolableLineRenderer renderer, Vector3 target, bool requiresImpactVfx)
         {
-            var maxLength = gunSettings.ShotRange;
+            var maxLength = gunSettings.HitscanShotRange;
             var bulletLength = gunSettings.BulletRenderLength;
             var renderTime = gunSettings.ShotRenderTime;
 

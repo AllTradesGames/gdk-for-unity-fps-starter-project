@@ -21,49 +21,139 @@ namespace Fps.Guns
 
         protected override void OnUpdate()
         {
-            var events = componentUpdateSystem.GetEventsReceived<ShootingComponent.Shots.Event>();
-            if (events.Count == 0)
+            var hitscanEvents = componentUpdateSystem.GetEventsReceived<ShootingComponent.Shots.Event>();
+            var projectileFireEvents = componentUpdateSystem.GetEventsReceived<ShootingComponent.ProShots.Event>();
+            var projectileHitEvents = componentUpdateSystem.GetEventsReceived<ServerProjectileComponent.Hit.Event>();
+
+            handleHitEvents(hitscanEvents);
+            handleProjectileHitEvents(projectileHitEvents);
+            handleProjectileEvents(projectileFireEvents);
+
+
+        }
+
+        private void handleHitEvents(MessagesSpan<ComponentEventReceived<ShootingComponent.Shots.Event>> events)
+        {
+
+            if (events.Count > 0)
             {
-                return;
-            }
-
-            var gunDataForEntity = GetComponentDataFromEntity<GunComponent.Component>();
-
-            for (var i = 0; i < events.Count; ++i)
-            {
-                ref readonly var shotEvent = ref events[i];
-                var shotInfo = shotEvent.Event.Payload;
-                if (!shotInfo.HitSomething || !shotInfo.EntityId.IsValid())
+                var gunDataForEntity = GetComponentDataFromEntity<GunComponent.Component>();
+                for (var i = 0; i < events.Count; ++i)
                 {
-                    continue;
-                }
-
-                var shooterSpatialID = shotInfo.EntityId;
-                if (!workerSystem.TryGetEntity(shooterSpatialID, out var shooterEntity))
-                {
-                    continue;
-                }
-
-                if (!gunDataForEntity.Exists(shooterEntity))
-                {
-                    continue;
-                }
-
-                var gunComponent = gunDataForEntity[shooterEntity];
-                var damage = GunDictionary.Get(gunComponent.GunId).ShotDamage;
-
-                var modifyHealthRequest = new HealthComponent.ModifyHealth.Request(
-                    shotInfo.EntityId,
-                    new HealthModifier
+                    ref readonly var shotEvent = ref events[i];
+                    var shotInfo = shotEvent.Event.Payload;
+                    if (!shotInfo.HitSomething || !shotInfo.TargetEntityId.IsValid())
                     {
-                        Amount = -damage,
-                        Origin = shotInfo.HitOrigin,
-                        AppliedLocation = shotInfo.HitLocation,
-                        Owner = shotInfo.EntityId,
+                        continue;
                     }
-                );
 
-                commandSystem.SendCommand(modifyHealthRequest);
+                    var shooterSpatialID = shotInfo.SourceEntityId;
+                    if (!workerSystem.TryGetEntity(shooterSpatialID, out var shooterEntity))
+                    {
+                        continue;
+                    }
+
+                    if (!gunDataForEntity.Exists(shooterEntity))
+                    {
+                        continue;
+                    }
+
+                    var gunComponent = gunDataForEntity[shooterEntity];
+                    var damage = GunDictionary.Get(gunComponent.GunId).ShotDamage;
+
+                    var modifyHealthRequest = new HealthComponent.ModifyHealth.Request(
+                        shotInfo.TargetEntityId,
+                        new HealthModifier
+                        {
+                            Amount = -damage,
+                            Origin = shotInfo.HitOrigin,
+                            AppliedLocation = shotInfo.HitLocation,
+                            Owner = shotInfo.SourceEntityId,
+                        }
+                    );
+
+                    commandSystem.SendCommand(modifyHealthRequest);
+                }
+            }
+        }
+
+        // Having to duplicate this because of different input type is BS. I hate C#
+        private void handleProjectileHitEvents(MessagesSpan<ComponentEventReceived<ServerProjectileComponent.Hit.Event>> events)
+        {
+
+            if (events.Count > 0)
+            {
+                var gunDataForEntity = GetComponentDataFromEntity<GunComponent.Component>();
+                for (var i = 0; i < events.Count; ++i)
+                {
+                    ref readonly var shotEvent = ref events[i];
+                    var shotInfo = shotEvent.Event.Payload;
+                    if (!shotInfo.HitSomething || !shotInfo.TargetEntityId.IsValid())
+                    {
+                        continue;
+                    }
+
+                    var shooterSpatialID = shotInfo.SourceEntityId;
+                    if (!workerSystem.TryGetEntity(shooterSpatialID, out var shooterEntity))
+                    {
+                        continue;
+                    }
+
+                    if (!gunDataForEntity.Exists(shooterEntity))
+                    {
+                        continue;
+                    }
+
+                    var gunComponent = gunDataForEntity[shooterEntity];
+                    var damage = GunDictionary.Get(gunComponent.GunId).ShotDamage;
+
+                    var modifyHealthRequest = new HealthComponent.ModifyHealth.Request(
+                        shotInfo.TargetEntityId,
+                        new HealthModifier
+                        {
+                            Amount = -damage,
+                            Origin = shotInfo.HitOrigin,
+                            AppliedLocation = shotInfo.HitLocation,
+                            Owner = shotInfo.SourceEntityId,
+                        }
+                    );
+
+                    commandSystem.SendCommand(modifyHealthRequest);
+                }
+            }
+        }
+
+        private void handleProjectileEvents(MessagesSpan<ComponentEventReceived<ShootingComponent.ProShots.Event>> events)
+        {
+
+            if (events.Count > 0)
+            {
+                var gunDataForEntity = GetComponentDataFromEntity<GunComponent.Component>();
+                for (var i = 0; i < events.Count; ++i)
+                {
+                    ref readonly var shotEvent = ref events[i];
+                    var shotInfo = shotEvent.Event.Payload;
+                    var shooterSpatialID = shotInfo.SourceEntityId;
+                    if (!workerSystem.TryGetEntity(shooterSpatialID, out var shooterEntity))
+                    {
+                        continue;
+                    }
+
+                    if (!gunDataForEntity.Exists(shooterEntity))
+                    {
+                        continue;
+                    }
+                    
+                    var gunComponent = gunDataForEntity[shooterEntity];
+                    shotInfo.ServerBulletIndex = GunDictionary.Get(gunComponent.GunId).ServerBulletIndex;
+
+                    var spawnProjectileRequest = new ServerProjectileComponent.SpawnProjectile.Request(
+                        shooterSpatialID,
+                        shotInfo
+                    );
+
+                    commandSystem.SendCommand(spawnProjectileRequest);
+                }
             }
         }
     }
