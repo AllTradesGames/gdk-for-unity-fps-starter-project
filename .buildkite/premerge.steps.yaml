@@ -13,11 +13,14 @@ windows: &windows
     - "environment=production"
     - "permission_set=builder"
     - "platform=windows"
-    - "queue=${WINDOWS_BUILDER_QUEUE:-v4-20-03-27-114536-bk10005-d340403f-d}"
+    - "queue=${WINDOWS_BUILDER_QUEUE:-v4-20-07-06-124455-bk13081-5d808a4a}"
     - "scaler_version=2"
     - "minimum_instances=1"
     - "agent_count=1"
     - "machine_type=quad"
+    - "experiment_normalised_upload_paths=true"
+    - "health_check_enabled=false"
+    - "maximum_instances=12"
   timeout_in_minutes: 60 # TODO(ENG-548): reduce timeout once agent-cold-start is optimised.
   retry:
     automatic:
@@ -39,7 +42,7 @@ linux: &linux
     - "environment=production"
     - "permission_set=builder"
     - "platform=linux"  # if you need a different platform, configure this: macos|linux|windows.
-    - "queue=v3-1562766449-11b126f880607f28-------z"
+    - "queue=v4-20-07-06-120608-bk13080-eb89af6c"
     - "scaler_version=2"
   timeout_in_minutes: 60 # TODO(ENG-548): reduce timeout once agent-cold-start is optimised.
   retry:
@@ -55,6 +58,7 @@ linux: &linux
 #    - "permission_set=builder"
 #    - "platform=macos"
 #    - "queue=${DARWIN_BUILDER_QUEUE:-v4-1582049359-33db24b626f71fa8}"
+#    - "maximum_instances=12"
 #  timeout_in_minutes: 60 # TODO(ENG-548): reduce timeout once agent-cold-start is optimised.
 #  retry:
 #    automatic:
@@ -89,7 +93,7 @@ steps:
       - improbable/test-summary#d7289cac8297018fd1b452dcf828979307b3ebc6:
           inputs:
             - label: ":octagonal_sign: Test failures "
-              artifact_path: "logs\\nunit\\*.xml"
+              artifact_path: "logs/nunit/*.xml"
               type: nunit
           formatter:
             type: details
