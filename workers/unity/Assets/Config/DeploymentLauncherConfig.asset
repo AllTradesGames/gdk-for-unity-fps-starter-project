@@ -13,30 +13,30 @@ MonoBehaviour:
   m_Name: DeploymentLauncherConfig
   m_EditorClassIdentifier: 
   AssemblyConfig:
-    ProjectName: unity_gdk
-    AssemblyName: myassembly
+    ProjectName: beta_steak_august_385
+    AssemblyName: prealpha-0.0.2
     ShouldForceUpload: 0
   DeploymentConfigs:
-  - ProjectName: unity_gdk
-    AssemblyName: myassembly
+  - ProjectName: beta_steak_august_385
+    AssemblyName: prealpha-0.0.2
     Deployment:
-      Name: my_deployment
+      Name: prealpha_0_0_2
       SnapshotPath: snapshots/cloud.snapshot
       LaunchJson: cloud_launch_large.json
-      Region: 1
+      Region: 0
       Cluster: 
       DeploymentLocationType: 0
       Tags:
       - dev_login
     SimulatedPlayerDeploymentConfigs:
-    - Name: my_deployment_sim1
+    - Name: prealpha_0_0_2_sim1
       SnapshotPath: 
       LaunchJson: cloud_launch_large_sim_players.json
-      Region: 1
+      Region: 0
       Cluster: 
       DeploymentLocationType: 0
       Tags: []
-      TargetDeploymentName: my_deployment
+      TargetDeploymentName: prealpha_0_0_2
       FlagPrefix: fps
       WorkerType: SimulatedPlayerCoordinator
       WorkerTypeId: 1
