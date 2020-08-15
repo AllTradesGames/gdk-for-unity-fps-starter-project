@@ -14,4 +14,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Fps/Scenes/FPS-SimulatedPlayerCoordinator.unity
     guid: 2cc9e8eb323f45b4c8dad1fb41dc2831
-  m_configObjects: {}
+  m_configObjects:
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 2eb6db91584b25347a535a28c30f4879,
+      type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 13bcb426dc8f7704dac8aed8cdd93258,
+      type: 2}
