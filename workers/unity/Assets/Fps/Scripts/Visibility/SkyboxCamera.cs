@@ -13,7 +13,7 @@ namespace Fps.Visibility
         }
 
         // Update is called once per frame
-        private void LateUpdate()
+        private void OnPreCull()
         {
             var playerCamera = Camera.main;
             if (playerCamera == null)
